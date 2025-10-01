@@ -1,10 +1,11 @@
 let paredeCount = 0;
 
-// Constantes para áreas padrão
+// Constantes para áreas e volumes
 const AREA_PORTA = 1.68; // 0.80m * 2.10m
 const AREA_JANELA = 2.4; // 2.00m * 1.20m
+const LITROS_LATA = 18;
+const LITROS_GALAO = 3.6;
 
-// Adicionar paredes iniciais ao carregar a página
 document.addEventListener("DOMContentLoaded", function () {
   adicionarParede();
 });
@@ -67,27 +68,51 @@ function limparErro() {
   errorDiv.style.display = "none";
 }
 
+/**
+ * Calcula a combinação ideal de latas (18L) e galões (3.6L) para um total de litros.
+ * @param {number} litros - O total de litros de tinta necessários.
+ * @returns {string} Uma string descrevendo a combinação.
+ */
+function calcularCombinacaoLatas(litros) {
+  if (litros <= 0) return "Nenhuma tinta necessária";
+
+  let numLatas = Math.floor(litros / LITROS_LATA);
+  const litrosRestantes = litros % LITROS_LATA;
+  let numGaloes = Math.ceil(litrosRestantes / LITROS_GALAO);
+
+  // Otimização: se o cálculo resultar em 5 galões, é melhor comprar 1 lata.
+  if (numGaloes * LITROS_GALAO >= LITROS_LATA) {
+    numGaloes = 0;
+    numLatas += 1;
+  }
+
+  const resultado = [];
+  if (numLatas > 0) {
+    resultado.push(`${numLatas} lata(s) de 18L`);
+  }
+  if (numGaloes > 0) {
+    resultado.push(`${numGaloes} galão(ões) de 3.6L`);
+  }
+
+  return resultado.length > 0 ? resultado.join(" e ") : "Menos de 1 galão";
+}
+
 function calcular() {
   limparErro();
   let areaTotal = 0;
   const paredes = {};
-
   const inputs = document.querySelectorAll("[data-parede]");
 
   inputs.forEach((input) => {
     const paredeId = input.dataset.parede;
     const tipo = input.dataset.tipo;
     const valor = parseFloat(input.value) || 0;
-
-    if (!paredes[paredeId]) {
-      paredes[paredeId] = {};
-    }
+    if (!paredes[paredeId]) paredes[paredeId] = {};
     paredes[paredeId][tipo] = valor;
   });
 
   for (const id in paredes) {
-    const largura = paredes[id].largura || 0;
-    const altura = paredes[id].altura || 0;
+    const { largura = 0, altura = 0 } = paredes[id];
     if (largura > 0 && altura > 0) {
       areaTotal += largura * altura;
     }
@@ -100,7 +125,6 @@ function calcular() {
 
   const portas = parseInt(document.getElementById("portas").value) || 0;
   const janelas = parseInt(document.getElementById("janelas").value) || 0;
-
   const areaDesconto = portas * AREA_PORTA + janelas * AREA_JANELA;
   const areaFinal = areaTotal - areaDesconto;
 
@@ -111,23 +135,29 @@ function calcular() {
     return;
   }
 
-  const rendimento =
+  const rendimentoPorLata =
     parseFloat(document.getElementById("rendimento").value) || 0;
-  if (rendimento <= 0) {
+  if (rendimentoPorLata <= 0) {
     exibirErro("O rendimento da tinta deve ser maior que zero.");
     return;
   }
+  const rendimentoPorLitro = rendimentoPorLata / LITROS_LATA;
   const demaos = parseInt(document.getElementById("demaos").value) || 1;
 
-  const litrosNecessarios = (areaFinal * demaos) / rendimento;
-  const quantidadeLatas = Math.ceil(litrosNecessarios);
-  const quantidadeComMargem = Math.ceil(litrosNecessarios * 1.1); // 10% de margem
+  const litrosNecessarios = (areaFinal * demaos) / rendimentoPorLitro;
+  const litrosComMargem = litrosNecessarios * 1.1; // 10% de margem
 
-  document.getElementById("area-total").textContent = areaFinal.toFixed(2) + " m²";
+  // Atualiza os resultados na tela
+  document.getElementById("area-total").textContent = `${areaFinal.toFixed(
+    2
+  )} m²`;
+  document.getElementById("total-litros").textContent = `${litrosNecessarios.toFixed(
+    2
+  )} L`;
   document.getElementById("qtd-tinta").textContent =
-    `${quantidadeLatas} lata(s) de 18L`;
+    calcularCombinacaoLatas(litrosNecessarios);
   document.getElementById("qtd-margem").textContent =
-    `${quantidadeComMargem} lata(s) de 18L`;
+    calcularCombinacaoLatas(litrosComMargem);
 
   const resultadoDiv = document.getElementById("resultado");
   resultadoDiv.style.display = "block";
