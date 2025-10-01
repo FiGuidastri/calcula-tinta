@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Calcule de forma fácil e rápida a quantidade de tinta necessária para pintar suas paredes, considerando portas, janelas e demãos."
+    />
+    <title>Calculadora de Tinta Inteligente</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>🎨 Calculadora de Tinta Inteligente</h1>
+        <p class="subtitle">
+          Planeje sua pintura sem desperdícios. Calcule a quantidade exata de
+          tinta.
+        </p>
+      </header>
+
+      <div class="section">
+        <h2><span class="number">1</span>Dimensões das Paredes</h2>
+        <div id="paredes-container"></div>
+        <button class="btn btn-add" onclick="adicionarParede()">
+          + Adicionar Outra Parede
+        </button>
+      </div>
+
+      <div class="section">
+        <h2><span class="number">2</span>Portas e Janelas</h2>
+        <p class="section-description">
+          Informe a quantidade de portas e janelas para descontar da área
+          total.
+        </p>
+        <div class="grid-2">
+          <div class="input-group">
+            <label for="portas">Quantidade de Portas</label>
+            <input
+              type="number"
+              id="portas"
+              value="0"
+              min="0"
+              placeholder="Ex: 1"
+            />
+          </div>
+          <div class="input-group">
+            <label for="janelas">Quantidade de Janelas</label>
+            <input
+              type="number"
+              id="janelas"
+              value="0"
+              min="0"
+              placeholder="Ex: 2"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2><span class="number">3</span>Detalhes da Tinta</h2>
+        <div class="grid-2">
+          <div class="input-group">
+            <label for="tipo-tinta">Tipo de Tinta</label>
+            <select id="tipo-tinta" onchange="atualizarRendimento()">
+              <option value="300">Acrílica Premium (300 m²/lata)</option>
+              <option value="250">Látex PVA (250 m²/lata)</option>
+              <option value="200">Látex Acrílica (200 m²/lata)</option>
+              <option value="150">Esmalte Sintético (150 m²/lata)</option>
+              <option value="custom">Personalizado</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label for="rendimento">Rendimento (m² por lata de 18L)</label>
+            <input
+              type="number"
+              id="rendimento"
+              value="300"
+              min="1"
+              placeholder="Ex: 300"
+            />
+          </div>
+        </div>
+        <div class="input-group">
+          <label for="demaos">Número de Demãos</label>
+          <select id="demaos">
+            <option value="1">1 demão</option>
+            <option value="2" selected>2 demãos (recomendado)</option>
+            <option value="3">3 demãos</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="error-message" class="error-message"></div>
+
+      <div class="actions">
+        <button class="btn btn-primary" onclick="calcular()">
+          Calcular Tinta
+        </button>
+        <button class="btn btn-secondary" onclick="limpar()">
+          Limpar e Recomeçar
+        </button>
+      </div>
+
+      <div class="resultado" id="resultado">
+        <h2>📊 Resultado do Cálculo</h2>
+        <div class="resultado-item">
+          <span>Área Total a Pintar:</span>
+          <strong class="resultado-valor" id="area-total">0 m²</strong>
+        </div>
+        <div class="resultado-item">
+          <span>Tinta Necessária (valor exato):</span>
+          <strong class="resultado-valor" id="qtd-tinta"
+            >0 latas de 18L</strong
+          >
+        </div>
+        <div class="resultado-item recommendation">
+          <span>Recomendado (com 10% de margem):</span>
+          <strong class="resultado-valor" id="qtd-margem"
+            >0 latas de 18L</strong
+          >
+        </div>
+      </div>
+
+      <div class="info-box">
+        <h3>ℹ️ Dicas Importantes</h3>
+        <ul>
+          <li>
+            Uma margem de 10% é recomendada para recortes, possíveis retoques e
+            perdas durante a aplicação.
+          </li>
+          <li>
+            Áreas de referência usadas no cálculo: Porta Padrão (1.68 m²) e
+            Janela Média (2.4 m²).
+          </li>
+          <li>
+            Superfícies muito porosas ou com cores muito diferentes podem exigir
+            uma demão extra.
+          </li>
+          <li>
+            Consulte sempre a embalagem da tinta para verificar o rendimento
+            exato informado pelo fabricante.
+          </li>
+        </ul>
+      </div>
+    </div>
+    <script src="script.js" defer></script>
+  </body>
+</html>
